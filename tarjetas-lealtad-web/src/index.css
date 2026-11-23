@@ -1,0 +1,57 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Work+Sans:wght@400;500;600&display=swap');
+
+/* ---- Colores de la marca: se sobrescriben las variables de Bootstrap ---- */
+:root {
+  --bs-primary: #3f6350;
+  --bs-primary-rgb: 63, 99, 80;
+  --bs-warning: #e4b54a;
+  --bs-warning-rgb: 228, 181, 74;
+  --bs-body-bg: #fdfbf7;
+  --bs-body-bg-rgb: 253, 251, 247;
+  --bs-body-color: #2e2a25;
+  --bs-body-color-rgb: 46, 42, 37;
+  --bs-secondary-color: #7a756b;
+  --bs-border-color: #ede8db;
+  --bs-body-font-family: 'Work Sans', sans-serif;
+  --bs-link-color: #3f6350;
+  --bs-link-color-rgb: 63, 99, 80;
+}
+
+h1, h2, h3, h4, h5, h6, .font-display {
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.btn-primary {
+  --bs-btn-bg: #3f6350;
+  --bs-btn-border-color: #3f6350;
+  --bs-btn-hover-bg: #2c4a3a;
+  --bs-btn-hover-border-color: #2c4a3a;
+  --bs-btn-active-bg: #2c4a3a;
+  --bs-btn-active-border-color: #2c4a3a;
+  --bs-btn-disabled-bg: #3f6350;
+  --bs-btn-disabled-border-color: #3f6350;
+}
+.btn-outline-primary {
+  --bs-btn-color: #3f6350;
+  --bs-btn-border-color: #3f6350;
+  --bs-btn-hover-bg: #3f6350;
+  --bs-btn-hover-border-color: #3f6350;
+  --bs-btn-active-bg: #2c4a3a;
+  --bs-btn-active-border-color: #2c4a3a;
+}
+.form-control:focus {
+  border-color: #3f6350;
+  box-shadow: 0 0 0 0.25rem rgba(63, 99, 80, 0.2);
+}
+
+/* ---- Lo único que Bootstrap no trae ---- */
+.app-shell {            /* vista tipo celular centrada */
+  max-width: 480px;
+  min-height: 100dvh;
+}
+.login-hero {           /* degradado de la pantalla de login */
+  background: linear-gradient(180deg, #3f6350 0%, #a9c9a4 150%);
+}
+.modal-backdrop.show {  /* el modal de Bootstrap con el tono de la marca */
+  --bs-backdrop-bg: #2e2a25;
+}
