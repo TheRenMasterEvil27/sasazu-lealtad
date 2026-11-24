@@ -1,12 +1,14 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useClientes } from '../context/ClientesContext'
+import { useAuth } from '../context/AuthContext'
 import AppHeader from '../components/AppHeader'
 
 export default function ClientList() {
   const [busqueda, setBusqueda] = useState('')
   const navigate = useNavigate()
   const { clientes, cargando, error, recargar } = useClientes()
+  const { usuario, cerrarSesion } = useAuth()
 
   const clientesFiltrados = clientes.filter(
     (c) =>
@@ -16,7 +18,15 @@ export default function ClientList() {
 
   return (
     <div className="app-shell mx-auto d-flex flex-column">
-      <AppHeader title="Clientes frecuentes" subtitle={`${clientes.length} registrados`} />
+      <AppHeader
+        title="Clientes frecuentes"
+        subtitle={`${clientes.length} registrados · ${usuario.nombre}`}
+        action={
+          <button type="button" className="btn btn-sm btn-outline-light rounded-pill px-3" onClick={cerrarSesion}>
+            Salir
+          </button>
+        }
+      />
 
       <div className="px-3 pt-3">
         <input

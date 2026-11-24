@@ -1,15 +1,33 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Navigate, useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 
 export default function Login() {
-  const [telefono, setTelefono] = useState('')
+  const [usuarioEscrito, setUsuarioEscrito] = useState('')
   const [contrasena, setContrasena] = useState('')
+  const [error, setError] = useState(null)
+  const [entrando, setEntrando] = useState(false)
+  const { usuario, verificando, iniciarSesion } = useAuth()
   const navigate = useNavigate()
 
-  function handleSubmit(e) {
+  // Si ya hay sesión guardada, no tiene caso mostrar el login
+  if (usuario) return <Navigate to="/clientes" replace />
+
+  async function handleSubmit(e) {
     e.preventDefault()
-    // Por ahora no valida nada de verdad — eso llega con el backend
-    navigate('/clientes')
+    if (!usuarioEscrito.trim() || !contrasena) {
+      setError('Escribe tu usuario y tu contraseña')
+      return
+    }
+    setEntrando(true)
+    setError(null)
+    try {
+      await iniciarSesion(usuarioEscrito, contrasena)
+      navigate('/clientes', { replace: true })
+    } catch (err) {
+      setError(err.message)
+      setEntrando(false)
+    }
   }
 
   return (
@@ -25,36 +43,48 @@ export default function Login() {
         <small className="opacity-75">BURGER &amp; BEER</small>
       </div>
 
-      <form className="flex-grow-1 p-4" onSubmit={handleSubmit}>
-        <div className="mb-3">
-          <label htmlFor="telefono" className="form-label small text-secondary">Teléfono</label>
-          <input
-            id="telefono"
-            type="tel"
-            className="form-control form-control-lg"
-            placeholder="55 1234 5678"
-            value={telefono}
-            onChange={(e) => setTelefono(e.target.value)}
-          />
+      {verificando ? (
+        <div className="d-flex justify-content-center p-5">
+          <div className="spinner-border text-primary" role="status" aria-label="Cargando" />
         </div>
-        <div className="mb-4">
-          <label htmlFor="contrasena" className="form-label small text-secondary">Contraseña</label>
-          <input
-            id="contrasena"
-            type="password"
-            className="form-control form-control-lg"
-            placeholder="••••••••"
-            value={contrasena}
-            onChange={(e) => setContrasena(e.target.value)}
-          />
-        </div>
-        <button type="submit" className="btn btn-primary btn-lg rounded-pill w-100 shadow-sm">
-          Iniciar sesión
-        </button>
-        <button type="button" className="btn btn-link w-100 mt-3 text-decoration-none">
-          ¿Olvidaste tu contraseña?
-        </button>
-      </form>
+      ) : (
+        <form className="flex-grow-1 p-4" onSubmit={handleSubmit}>
+          <div className="mb-3">
+            <label htmlFor="usuario" className="form-label small text-secondary">Usuario</label>
+            <input
+              id="usuario"
+              type="text"
+              autoComplete="username"
+              autoCapitalize="none"
+              autoCorrect="off"
+              spellCheck={false}
+              className="form-control form-control-lg"
+              placeholder="tu usuario"
+              value={usuarioEscrito}
+              onChange={(e) => setUsuarioEscrito(e.target.value)}
+            />
+          </div>
+          <div className="mb-4">
+            <label htmlFor="contrasena" className="form-label small text-secondary">Contraseña</label>
+            <input
+              id="contrasena"
+              type="password"
+              autoComplete="current-password"
+              className="form-control form-control-lg"
+              placeholder="••••••••"
+              value={contrasena}
+              onChange={(e) => setContrasena(e.target.value)}
+            />
+          </div>
+          {error && <div className="alert alert-danger py-2 small">{error}</div>}
+          <button type="submit" className="btn btn-primary btn-lg rounded-pill w-100 shadow-sm" disabled={entrando}>
+            {entrando ? 'Entrando…' : 'Iniciar sesión'}
+          </button>
+          <p className="text-center small text-secondary mt-4 mb-0">
+            ¿Olvidaste tu contraseña? Pide al administrador que la restablezca.
+          </p>
+        </form>
+      )}
     </div>
   )
 }

@@ -24,6 +24,7 @@ Desde la carpeta `tarjetas-lealtad-api`, ejecuta en MySQL:
 
 ```sql
 SOURCE db/schema.sql;
+SOURCE db/auth.sql;   -- usuarios y sesiones del login
 SOURCE db/seed.sql;   -- datos de ejemplo (opcional)
 ```
 
@@ -39,7 +40,15 @@ npm run dev
 
 La API queda en `http://localhost:3000`. Para comprobarla: `http://localhost:3000/api/salud`.
 
-Variables de `.env`: `PORT`, `DB_HOST`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`, y las reglas de la tarjeta `META_PREMIO` (monto por sello) y `SELLOS_META` (sellos para el premio).
+**Crear un usuario del personal** (sin esto nadie puede entrar). Pide la contraseña sin mostrarla; si el usuario ya existe, le cambia la contraseña:
+
+```bash
+npm run usuario -- ana "Ana Torres"
+```
+
+El usuario va en minúsculas, de 3 a 30 caracteres (letras, números, `.`, `-`, `_`). El nombre entre comillas es el que se muestra en la app (opcional).
+
+Variables de `.env`: `PORT`, `DB_HOST`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`, las reglas de la tarjeta `META_PREMIO` (monto por sello) y `SELLOS_META` (sellos para el premio), y `SESION_DIAS` (duración de la sesión, 7 por defecto). En producción también `CORS_ORIGIN` (dominio de la web) y `TRUST_PROXY=1` si hay un proxy delante.
 
 ### 3. Web
 
@@ -61,6 +70,11 @@ Para generar la versión de producción: `npm run build` (queda en `dist/`).
 
 ## Endpoints principales
 
+Todo `/api/clientes` exige sesión (`Authorization: Bearer <token>`).
+
+- `POST /api/auth/login` – iniciar sesión (usuario y contraseña)
+- `GET /api/auth/yo` – usuario de la sesión actual
+- `POST /api/auth/logout` – cerrar sesión
 - `GET /api/clientes` – lista de clientes
 - `POST /api/clientes` – crear cliente
 - `GET /api/clientes/:id` – detalle con historial
@@ -70,5 +84,5 @@ Para generar la versión de producción: `npm run build` (queda en `dist/`).
 
 ## Notas
 
-- El inicio de sesión de la web aún no valida credenciales; está pendiente de implementarse con el backend.
+- Login solo para el personal: contraseñas con scrypt, sesiones en base de datos (token guardado como hash) y bloqueo temporal tras 5 intentos fallidos.
 - `npm audit` reporta 4 advertencias moderadas en herramientas de compilación (`vite-plugin-pwa` → `workbox-build` → `glob`/`minimatch`). No afectan al código que corre en producción.
